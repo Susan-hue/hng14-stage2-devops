@@ -106,4 +106,18 @@ This document records every bug found in the starter repository, including the f
 **Problem:** Both catch blocks captured the `err` variable but never used it, always returning a generic hardcoded error message regardless of what actually went wrong. This caused ESLint warnings and meant errors were silently swallowed with no useful information returned to the caller.  
 **Fix:** Replaced the hardcoded `"something went wrong"` string with `err.message` so the actual error is returned in the response.
 
+## Fix 13 — Flake8 violations in API and test files
+
+**File:** `api/main.py`  
+**Lines:** 22, 29, 33  
+**Problem:** Missing two blank lines before function definitions (E302) and no newline at end of file (W292). PEP8 requires two blank lines between top-level function definitions.  
+**Fix:** Added two blank lines before each route function and added a newline at the end of the file.
+
+---
+
+**File:** `api/tests/test_main.py`  
+**Lines:** 1, 58  
+**Problem:** `import pytest` was present but never used (F401), and no newline at end of file (W292).  
+**Fix:** Removed the unused `import pytest` line and added a newline at the end of the file.
+
 ---
