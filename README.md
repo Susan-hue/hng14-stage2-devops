@@ -3,26 +3,30 @@
 A multi-service job processing system containerized with Docker and deployed
 via a full CI/CD pipeline using GitHub Actions.
 
+---
+
 ## Services
 
-- **Frontend** — Node.js/Express server where users submit and track jobs
-- **API** — Python/FastAPI service that creates jobs and serves status updates
-- **Worker** — Python service that picks up and processes jobs from the queue
-- **Redis** — Shared message queue between the API and worker
+| Service | Technology | Role |
+|---|---|---|
+| Frontend | Node.js/Express | Users submit and track jobs |
+| API | Python/FastAPI | Creates jobs and serves status updates |
+| Worker | Python | Picks up and processes jobs from the queue |
+| Redis | Redis 7 | Shared message queue between API and worker |
 
 ---
 
 ## Prerequisites
 
-Make sure the following are installed on your machine:
-
-- [Docker](https://docs.docker.com/get-docker/) (v20+)
-- [Docker Compose](https://docs.docker.com/compose/install/) (v1.29+)
-- [Git](https://git-scm.com/)
+| Tool | Minimum Version |
+|---|---|
+| Docker | v20+ |
+| Docker Compose | v1.29+ |
+| Git | Any recent version |
 
 ---
 
-## Quickstart — Bring the Stack Up on a Clean Machine
+## Quickstart
 
 ### 1. Clone the repository
 
@@ -55,84 +59,77 @@ PORT=3000
 docker-compose up --build -d
 ```
 
-### 4. Verify all services are running
+### 4. Verify all services are healthy
 
 ```bash
 docker-compose ps
 ```
 
 Expected output:
- Name               Command               State                Ports
+
+Name              Command               State                Ports
 
 app_api_1        uvicorn main:app ...          Up (healthy)     8000/tcp
 app_frontend_1   node app.js                   Up (healthy)     0.0.0.0:3000->3000/tcp
 app_redis_1      docker-entrypoint.sh ...      Up (healthy)     6379/tcp
 app_worker_1     python worker.py              Up (healthy)
 
-All four services should show `Up (healthy)` before proceeding.
+All four services must show `Up (healthy)` before the application is ready.
 
-### 5. Access the application
+### 5. Open the application
 
-Open your browser and visit:
 http://localhost:3000
 
 ---
 
 ## Verifying Each Service
 
-### Frontend
-```bash
-curl http://localhost:3000/health
-```
-
-### API
+**Check API health:**
 ```bash
 curl http://localhost:8000/health
+# Expected: {"status": "ok"}
 ```
-Expected response: `{"status": "ok"}`
 
-### Submit a job manually
+**Submit a job:**
 ```bash
 curl -X POST http://localhost:3000/submit
+# Expected: {"job_id": "<uuid>"}
 ```
-Expected response: `{"job_id": "<uuid>"}`
 
-### Check job status
+**Check job status:**
 ```bash
 curl http://localhost:3000/status/<job_id>
+# Expected: {"job_id": "<uuid>", "status": "completed"}
 ```
-Expected response: `{"job_id": "<uuid>", "status": "completed"}`
 
 ---
 
 ## CI/CD Pipeline
 
-The pipeline runs automatically on every push to `main` via GitHub Actions
-and executes the following stages in strict order:
+Runs automatically on every push to `main` via GitHub Actions.
+
 lint → test → build → security scan → integration test → deploy
 
-- **Lint** — flake8 (Python), eslint (JavaScript), hadolint (Dockerfiles)
-- **Test** — pytest with Redis mocked, coverage report uploaded as artifact
-- **Build** — builds all three images, tags with git SHA and latest, pushes
-  to a local registry
-- **Security scan** — Trivy scans all images, fails on any CRITICAL CVE,
-  uploads SARIF artifact
-- **Integration test** — spins up the full stack, submits a real job, polls
-  until complete, tears down cleanly
-- **Deploy** — SSH rolling update to EC2, new container must pass healthcheck
-  before old one is stopped
+| Stage | What it does |
+|---|---|
+| Lint | flake8 (Python), eslint (JavaScript), hadolint (Dockerfiles) |
+| Test | pytest with Redis mocked, coverage report uploaded as artifact |
+| Build | Builds all three images, tags with git SHA and latest, pushes to local registry |
+| Security scan | Trivy scans all images, fails on any CRITICAL CVE, uploads SARIF artifact |
+| Integration test | Spins up full stack, submits real job, polls until complete, tears down cleanly |
+| Deploy | SSH rolling update to EC2 — new container must pass healthcheck before old one stops |
+
+A failure in any stage prevents all subsequent stages from running.
 
 ---
 
 ## Stopping the Stack
 
 ```bash
+# Stop all services
 docker-compose down
-```
 
-To also remove volumes (clears Redis data):
-
-```bash
+# Stop and remove volumes (clears Redis data)
 docker-compose down -v
 ```
 
@@ -140,11 +137,11 @@ docker-compose down -v
 
 ## Environment Variables
 
-See `.env.example` for all required variables and descriptions.
+See [`.env.example`](./.env.example) for all required variables with descriptions.
 
 ---
 
 ## Bug Fixes
 
-See [FIXES.md](./FIXES.md) for a full list of every bug found in the starter
-repository, including file, line number, problem description, and fix applied.
+See [`FIXES.md`](./FIXES.md) for every bug found in the starter repository,
+including file, line number, problem description, and fix applied.
