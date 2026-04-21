@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
@@ -8,7 +8,6 @@ RUN npm ci --only=production
 FROM node:22-alpine
 WORKDIR /app
 
-# Upgrade Alpine packages to get patched libcrypto3 and libssl3
 RUN apk upgrade --no-cache
 
 COPY --from=builder /app/node_modules ./node_modules
