@@ -147,4 +147,11 @@ Do not open a pull request to the starter repo
 **Problem:** Alpine 3.21.3 shipped with `libcrypto3` and `libssl3` at version `3.3.3-r0`, which contains CVE-2025-15467 — a CRITICAL OpenSSL vulnerability allowing remote code execution or denial of service. Trivy flagged this and failed the pipeline.  
 **Fix:** Added `RUN apk upgrade --no-cache` to the final stage so Alpine upgrades all packages including `libcrypto3` and `libssl3` to their patched versions at build time.
 
+## Fix 17 — uvicorn executable missing from API final image
+
+**File:** `api/Dockerfile`  
+**Line:** 13  
+**Problem:** The multi-stage build only copied Python packages from `/usr/local/lib/python3.11/site-packages` but did not copy the `uvicorn` executable from `/usr/local/bin/`. The final image had the uvicorn library installed but no command to run it, causing the container to fail with "executable file not found in $PATH".  
+**Fix:** Added `COPY --from=builder /usr/local/bin/uvicorn /usr/local/bin/uvicorn` to copy the executable into the final stage.
+
 ---
