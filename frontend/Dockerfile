@@ -3,20 +3,18 @@ WORKDIR /app
 
 COPY package*.json ./
 
-# Install only production dependencies
 RUN npm ci --only=production
 
-# ── Final stage ──────────────────────────────────────────
-FROM node:18-alpine
+FROM node:22-alpine
 WORKDIR /app
 
-# Copy only production node_modules from builder
+# Upgrade Alpine packages to get patched libcrypto3 and libssl3
+RUN apk upgrade --no-cache
+
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy app source (app.js, views, public, etc.)
 COPY . .
 
-# Create non-root user (Alpine syntax)
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 
