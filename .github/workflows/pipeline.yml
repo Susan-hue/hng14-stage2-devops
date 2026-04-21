@@ -298,28 +298,49 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             export PATH=$PATH:/usr/bin:/usr/local/bin
+
+            # Clone repo if it doesn't exist, otherwise pull latest
+            if [ ! -d ~/app/.git ]; then
+              git clone https://github.com/${{ github.repository }} ~/app
+            else
+              cd ~/app && git pull origin main
+            fi
+
             cd ~/app
 
-            /usr/bin/docker-compose pull
+            # Write .env file from secrets
+            cat > .env <<EOF
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
+            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            API_HOST=${{ secrets.API_HOST }}
+            API_PORT=${{ secrets.API_PORT }}
+            API_URL=${{ secrets.API_URL }}
+            PORT=${{ secrets.PORT }}
+            EOF
 
-            /usr/bin/docker-compose up -d --no-deps --scale api=2 api
+            # Start new container
+            /usr/bin/docker-compose up -d --build --no-deps api
 
+            # Wait for health check
             TIMEOUT=60
             ELAPSED=0
-            NEW_CONTAINER=$(/usr/bin/docker ps --filter "name=api" --latest --format "{{.ID}}")
 
             while [ $ELAPSED -lt $TIMEOUT ]; do
-              HEALTH=$(/usr/bin/docker inspect --format='{{.State.Health.Status}}' $NEW_CONTAINER)
-              echo "Health: $HEALTH (${ELAPSED}s elapsed)"
-              if [ "$HEALTH" = "healthy" ]; then
-                echo "New container is healthy — removing old one"
-                /usr/bin/docker-compose up -d --no-deps api
-                exit 0
+              NEW_CONTAINER=$(/usr/bin/docker ps --filter "name=app-api" --format "{{.ID}}" | head -1)
+              if [ -n "$NEW_CONTAINER" ]; then
+                HEALTH=$(/usr/bin/docker inspect --format='{{.State.Health.Status}}' $NEW_CONTAINER)
+                echo "Health: $HEALTH (${ELAPSED}s elapsed)"
+                if [ "$HEALTH" = "healthy" ]; then
+                  echo "Container is healthy — deploy successful"
+                  /usr/bin/docker-compose up -d --build
+                  exit 0
+                fi
               fi
               sleep 5
               ELAPSED=$((ELAPSED + 5))
             done
 
-            echo "New container did not become healthy — aborting deploy"
-            /usr/bin/docker-compose up -d --no-deps --scale api=1 api
+            echo "Container did not become healthy — aborting"
+            /usr/bin/docker-compose down
             exit 1
