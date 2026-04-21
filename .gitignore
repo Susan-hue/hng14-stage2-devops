@@ -1,1 +1,31 @@
+# Secrets — most critical
 .env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+npm-debug.log*
+frontend/node_modules/
+
+# Docker
+*.tar
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
