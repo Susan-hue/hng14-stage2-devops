@@ -327,7 +327,7 @@ jobs:
             ELAPSED=0
 
             while [ $ELAPSED -lt $TIMEOUT ]; do
-              NEW_CONTAINER=$(/usr/bin/docker ps --filter "name=app-api" --format "{{.ID}}" | head -1)
+              NEW_CONTAINER=$(/usr/bin/docker ps --filter "name=app_api" --format "{{.ID}}" | head -1)
               if [ -n "$NEW_CONTAINER" ]; then
                 HEALTH=$(/usr/bin/docker inspect --format='{{.State.Health.Status}}' $NEW_CONTAINER)
                 echo "Health: $HEALTH (${ELAPSED}s elapsed)"
