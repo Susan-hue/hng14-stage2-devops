@@ -121,6 +121,8 @@ jobs:
         with:
           context: ./api
           push: true
+          cache-from: type=registry,ref=localhost:5000/api:latest
+          cache-to: type=inline
           tags: |
             localhost:5000/api:${{ github.sha }}
             localhost:5000/api:latest
@@ -130,6 +132,8 @@ jobs:
         with:
           context: ./worker
           push: true
+          cache-from: type=registry,ref=localhost:5000/worker:latest
+          cache-to: type=inline
           tags: |
             localhost:5000/worker:${{ github.sha }}
             localhost:5000/worker:latest
@@ -139,10 +143,11 @@ jobs:
         with:
           context: ./frontend
           push: true
+          cache-from: type=registry,ref=localhost:5000/frontend:latest
+          cache-to: type=inline
           tags: |
             localhost:5000/frontend:${{ github.sha }}
             localhost:5000/frontend:latest
-
 # ─────────────────────────────────────────────
 # STAGE 4 — SECURITY SCAN
 # Trivy scans each image for known vulnerabilities.
