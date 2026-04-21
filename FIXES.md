@@ -92,4 +92,11 @@ This document records every bug found in the starter repository, including the f
 **Problem:** `redis` had no version pin, creating the same reproducibility problem as Fix 9.  
 **Fix:** Pinned to `redis==5.0.1` to match the version used by the API service.
 
+## Fix 11 — Hardcoded port in frontend server
+
+**File:** `frontend/app.js`  
+**Line:** 30 
+**Problem:** The port was hardcoded as `3000` directly in `app.listen(3000, ...)`. This means the port can never be changed without editing source code, which is bad practice for a containerised service where configuration should come from environment variables.  
+**Fix:** Replaced with `const PORT = process.env.PORT || 3000;` and updated the listen call to `app.listen(PORT, ...)` so the port is configurable via environment variable with `3000` as the default.
+
 ---
