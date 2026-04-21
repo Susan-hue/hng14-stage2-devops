@@ -120,4 +120,10 @@ This document records every bug found in the starter repository, including the f
 **Problem:** `import pytest` was present but never used (F401), and no newline at end of file (W292).  
 **Fix:** Removed the unused `import pytest` line and added a newline at the end of the file.
 
+## Fix 14 — Flake8 violations in worker
+
+**File:** `worker/worker.py`  
+**Lines:** 19, 23  
+**Problem:** Missing two blank lines after function definition (E305) and no newline at end of file (W292). PEP8 requires two blank lines between top-level function definitions and module-level code.  
+**Fix:** Added two blank lines after `process_job` function definition and added a newline at the end of the file.
 ---
