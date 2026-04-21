@@ -126,4 +126,18 @@ This document records every bug found in the starter repository, including the f
 **Lines:** 19, 23  
 **Problem:** Missing two blank lines after function definition (E305) and no newline at end of file (W292). PEP8 requires two blank lines between top-level function definitions and module-level code.  
 **Fix:** Added two blank lines after `process_job` function definition and added a newline at the end of the file.
+
+4. Document It
+
+A README.md that explains how to bring the entire stack up on a clean machine from scratch—list prerequisites, all commands, and what a successful startup looks like
+A FIXES.md documenting every bug found—file, line number, what it was, and how you fixed it
+A .env.example committed with placeholder values for every required variable
+Evaluation Criteria / Acceptance Criteria
+Your fork must be public. Private repositories will not be graded
+Everything must be committed—nothing should only exist locally
+.env must never appear in your repository or git history. This will cost you heavily
+Do not hardcode secrets, passwords, or tokens anywhere—YAML files, Python, JavaScript, or git history all count
+No cloud accounts required. This task runs entirely on your machine and GitHub's free tier
+Do not open a pull request to the starter repo
+
 ---
