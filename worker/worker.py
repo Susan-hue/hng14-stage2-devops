@@ -16,6 +16,7 @@ def process_job(job_id):
     r.hset(f"job:{job_id}", "status", "completed")
     print(f"Done: {job_id}")
 
+
 while True:
     job = r.brpop("job", timeout=5)
     if job:
