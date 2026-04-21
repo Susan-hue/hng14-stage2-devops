@@ -11,6 +11,7 @@ WORKDIR /app
 RUN useradd --create-home --shell /bin/bash appuser
 
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin/uvicorn /usr/local/bin/uvicorn
 
 COPY --chown=appuser:appuser main.py .
 
