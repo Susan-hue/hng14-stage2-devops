@@ -140,4 +140,11 @@ Do not hardcode secrets, passwords, or tokens anywhere—YAML files, Python, Jav
 No cloud accounts required. This task runs entirely on your machine and GitHub's free tier
 Do not open a pull request to the starter repo
 
+## Fix 16 — Critical CVEs in frontend Docker image
+
+**File:** `frontend/Dockerfile`  
+**Line:** Final stage  
+**Problem:** Alpine 3.21.3 shipped with `libcrypto3` and `libssl3` at version `3.3.3-r0`, which contains CVE-2025-15467 — a CRITICAL OpenSSL vulnerability allowing remote code execution or denial of service. Trivy flagged this and failed the pipeline.  
+**Fix:** Added `RUN apk upgrade --no-cache` to the final stage so Alpine upgrades all packages including `libcrypto3` and `libssl3` to their patched versions at build time.
+
 ---
