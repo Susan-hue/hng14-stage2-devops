@@ -99,4 +99,11 @@ This document records every bug found in the starter repository, including the f
 **Problem:** The port was hardcoded as `3000` directly in `app.listen(3000, ...)`. This means the port can never be changed without editing source code, which is bad practice for a containerised service where configuration should come from environment variables.  
 **Fix:** Replaced with `const PORT = process.env.PORT || 3000;` and updated the listen call to `app.listen(PORT, ...)` so the port is configurable via environment variable with `3000` as the default.
 
+## Fix 12 — Unused error variable in frontend catch blocks
+
+**File:** `frontend/app.js`  
+**Lines:** 16, 25  
+**Problem:** Both catch blocks captured the `err` variable but never used it, always returning a generic hardcoded error message regardless of what actually went wrong. This caused ESLint warnings and meant errors were silently swallowed with no useful information returned to the caller.  
+**Fix:** Replaced the hardcoded `"something went wrong"` string with `err.message` so the actual error is returned in the response.
+
 ---
